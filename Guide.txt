@@ -147,3 +147,35 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.model("User", userSchema);
 
 export default User;
+
+////////////////////////////////////////////////////////////////
+API ROUTE
+// add as test to index,js
+app.get("/test", (req, res) => {
+  res.send("Hello World!");
+});
+api, create routes folder, create user.routes.js
+
+// create a route so we can use in index.js
+import express, { Router } from "express";
+import { testLogic } from "../controller/user.controller.js";
+// import userController from "../controllers/user.controller";
+
+const router = express.Router();
+
+router.get("/test", testLogic);
+
+export default router;
+
+//api, create controller folder, create user.controller.js
+
+put the testLogic and export
+----
+export const testLogic = (req, res) => {
+  res.send({
+    message: "This is a test route",
+  });
+};
+
+//import for use in user.routes.js
+
