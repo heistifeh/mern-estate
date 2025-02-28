@@ -5,6 +5,7 @@ npm install tailwindcss @tailwindcss/vite
 @import "tailwindcss";
 npm i react-icons
 GITHUB.
+inside root folder
 git init
 git add .
 git commit -m "First commit"
@@ -63,3 +64,86 @@ go to package.json
 {client} mv .git ../
 moves repository one folder back
 >>move gitgnore from client to root
+////////////////////////////////////////////////////////////////
+1. root
+npm i mongoose
+root index.js
+import express from "express";
+import mongoose from "mongoose";
+
+go to mongodb.com and create project
+
+
+add string after creating cluster 
+
+mongoose.connect(
+  "mongodb+srv://teefeh26:passworddd@cluster0.qdcp4.mongodb.net/mern-estate?retryWrites=true&w=majority&appName=Cluster0"
+);
+////////////////////////////////////////////////////////
+CREATE .env in root
+//store string
+MONGO = "mongodb+srv://teefeh26:passworddd@cluster0.qdcp4.mongodb.net/mern-estate?retryWrites=true&w=majority&appName=Cluster0"
+
+//looks like this 
+mongoose.connect(process.env.MONGO);
+
+//install dotenv in root
+npm i dotenv
+
+//import to index.js
+import dotenv from 'dotenv'
+dotenv.config();
+
+//looks like this
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
+mongoose
+  .connect(process.env.MONGO)
+  .then(() => {
+    console.log("connected to MongoDB!");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+  
+const app = express();
+
+app.listen(3000, () => {
+  console.log("server is running on port 3000");
+});
+////////////////////////////////////////////////////
+add .env to gitgnore
+*.sln
+*.sw?
+.env
+///////////////////////
+api, create a foldeer models and inside user.models.js
+/// necessaryy to create database rules
+
+import mongoose from "mongoose";
+
+const userSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const User = mongoose.model("User", userSchema);
+
+export default User;
