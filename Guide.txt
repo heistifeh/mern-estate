@@ -179,3 +179,32 @@ export const testLogic = (req, res) => {
 
 //import for use in user.routes.js
 
+
+//////////////////////////////////////////////
+SIGN UP ROUTE.
+ create auth.routes.js
+// auth route has to be separate
+import express from "express";
+
+const router = express.router();
+
+router.post("/signup");
+
+//we re posting username and password
+
+......there is a whole lot of process here 1:15:00-1:35:00
+
+
+////////////////////////////////////////////////////////////
+using bcryptjs
+
+root
+npm i bcrypt.js
+
+import in auth/controller, since that is where we get the password from client
+
+import bcryptjs from "bcryptjs";
+ const hashedPassword = bcryptjs.hashSync(password, 10);
+
+//pass hashed password to databsase
+const newUser = new User({ username, email, password: hashedPassword });

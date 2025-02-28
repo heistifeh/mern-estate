@@ -5,5 +5,6 @@ import { testLogic } from "../controller/user.controller.js";
 const router = express.Router();
 
 router.get("/test", testLogic);
+// router.get("/sign-up", signupLogic);
 
 export default router;
