@@ -21,3 +21,14 @@ app.listen(3000, () => {
 //req is from client, res is from server
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
+
+// middlware for error
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  return res.status(statusCode).json({
+    success: false,
+    statusCode: statusCode,
+    message: message,
+  });
+});
