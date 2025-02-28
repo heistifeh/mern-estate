@@ -1,0 +1,65 @@
+npm create vite@latest client -- --template react
+npm install
+npm install tailwindcss @tailwindcss/vite
+
+@import "tailwindcss";
+npm i react-icons
+GITHUB.
+git init
+git add .
+git commit -m "First commit"
+>> then create a repository
+git remote add origin https://github.com/heistifeh/mern-estate.git
+git branch -M main
+git push -u origin main
+npm i react-router-dom
+
+1. CREATE PAGES FOLDER UNDER SRC AND ADD PAGES
+
+
+2.
+APP.JSX
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Signin from "./pages/Signin";
+import Signup from "./pages/Signup";
+import About from "./pages/About";
+import Profile from "./pages/Profile";
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/sign-in" element={<Signin />} />
+        <Route path="/sign-up" element={<Signup />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+3. CREATE COMPONENTS FOLDER UNDER SRC
+create Header.jsx and add to all pages
+
+
+BACKEND SETUP
+create api folder
+2. go to root folder "npm init -y"
+add  "main": "index.js",
+  "type": "module", to package.json
+3. create index.js
+4.to root npm i express, npm i nodemon
+
+5
+go to package.json
+"scripts": {
+  "dev": "nodemon api/index.js",
+  "start": "node api/index.js"
+  },
+
+6.
+{client} mv .git ../
+moves repository one folder back
+>>move gitgnore from client to root
