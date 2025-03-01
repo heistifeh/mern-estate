@@ -32,15 +32,14 @@ const Signin = () => {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      navigate("/");
-      if (!data.success) {
-        dispatch(signInFailure(data.message));
+      if (data.success === false) {
+        dispatch(signInFailure(`${data.message} not success`));
+        return;
       }
       dispatch(signInSuccess(data));
+      navigate("/");
     } catch (error) {
-      dispatch(signInFailure(error.message));
-    } finally {
-      setLoading(false);
+      dispatch(signInFailure(`${error.message} final catch`));
     }
   };
 

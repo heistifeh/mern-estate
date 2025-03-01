@@ -26,7 +26,7 @@ const Signup = () => {
       });
       const data = await res.json();
       navigate("/sign-in");
-      if (!data.success) {
+      if (data.success === false) {
         throw new Error(data.message, "fucked up");
       }
     } catch (error) {
