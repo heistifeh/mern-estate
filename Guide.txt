@@ -1,6 +1,23 @@
 npm create vite@latest client -- --template react
-npm install
+npm install  //client folder auto created.
 npm install tailwindcss @tailwindcss/vite
+
+vite.config
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [tailwindcss(), react()],
+});
+
+/////////////////////////
+index.css
+@import "tailwindcss";
+
+@theme {
+  --color-twitter-blue: #1da1f2;
+  --font-primary: "Titillium Web", serif;
 
 @import "tailwindcss";
 npm i react-icons
@@ -208,3 +225,13 @@ import bcryptjs from "bcryptjs";
 
 //pass hashed password to databsase
 const newUser = new User({ username, email, password: hashedPassword });
+
+
+TAILWIND SYNTAX
+style.css
+//adding custom class
+.card{
+@apply classes...
+}
+.badge{
+}
