@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.models.js";
 import { errorHandler } from "../utils/error.js";
+import Listing from "../models/listing.models.js";
 export const testLogic = (req, res) => {
   res.send({
     message: "This is a test route",
@@ -41,6 +42,22 @@ export const deleteUserLogic = async (req, res, next) => {
   try {
     await User.findByIdAndDelete(req.params.id);
     res.status(200).json("User has been deleted");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUserListings = async (req, res, next) => {
+  try {
+    if (req.user.id !== req.params.id)
+      return next(errorHandler(403, "You can only get your own account😒"));
+
+    const userListing = await Listing.find({
+      userRef: req.params.id,
+      //we can use either req.params.id(from the url) or req.user.id(from the middleware-verifyToken)
+    });
+
+    res.status(200).json(userListing);
   } catch (error) {
     next(error);
   }

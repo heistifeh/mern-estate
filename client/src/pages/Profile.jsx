@@ -14,9 +14,12 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
+  signOutStart,
+  signOutSuccess,
+  signOutFailure,
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
-
+import { useNavigate } from "react-router-dom";
 export default function Profile() {
   const fileRef = useRef(null);
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -27,6 +30,7 @@ export default function Profile() {
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   // firebase storage
   // allow read;
   // allow write: if
@@ -94,16 +98,32 @@ export default function Profile() {
   const handleDelete = async () => {
     try {
       dispatch(deleteUserStart());
-      const res =  await fetch(`/api/user/delete/${currentUser._id}`, {
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: "DELETE",
-      })
+      });
       const data = await res.json();
       if (data.success === false) {
         dispatch(deleteUserFailure(data.message));
       }
       dispatch(deleteUserSuccess(data));
+      navigate("/sign-in");
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      dispatch(signOutStart());
+      const res = await fetch("/api/auth/signout");
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(signOutFailure(data.message));
+      }
+      dispatch(signOutSuccess(data));
+      navigate("/sign-in");
+    } catch (error) {
+      dispatch(signOutFailure(error.message));
     }
   };
 
@@ -171,7 +191,9 @@ export default function Profile() {
         <button onClick={handleDelete} className="text-red-700 cursor-pointer">
           Delete account
         </button>
-        <span className="text-red-700 cursor-pointer">Sign out</span>
+        <button onClick={handleSignOut} className="text-red-700 cursor-pointer">
+          Sign out
+        </button>
       </div>
       {error && <span className="text-red-700">{error}</span>}
       {updateSuccess && (
