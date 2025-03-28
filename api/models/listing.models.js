@@ -42,6 +42,10 @@ const listingSchema = new mongoose.Schema(
       type: Boolean,
       required: true,
     },
+    imageUrls: {
+      type: Array,
+      required: true,
+    },
     //to know which user created the listing
     userRef: {
       type: String,
