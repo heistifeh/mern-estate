@@ -50,7 +50,7 @@ export const deleteUserLogic = async (req, res, next) => {
 export const getUserListings = async (req, res, next) => {
   try {
     if (req.user.id !== req.params.id)
-      return next(errorHandler(403, "You can only get your own account😒"));
+      return next(errorHandler(403, "You can only get your own listings😒"));
 
     const userListing = await Listing.find({
       userRef: req.params.id,
