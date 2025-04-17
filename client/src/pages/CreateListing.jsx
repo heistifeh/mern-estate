@@ -95,7 +95,7 @@ const CreateListing = () => {
         ...prevFormData,
         imageUrls: [...prevFormData.imageUrls, ...uploadedImages],
       }));
-setSelectedImages([]); // Clear selected images after upload
+      setSelectedImages([]); // Clear selected images after upload
       setImageUploadSuccess("Images uploaded successfully!");
       setTimeout(() => {
         setImageUploadSuccess("");
@@ -263,7 +263,6 @@ setSelectedImages([]); // Clear selected images after upload
               <span>Furnished</span>
             </div>
             <div className="flex gap-2">
-             
               <input
                 type="checkbox"
                 id="offer"
@@ -314,7 +313,9 @@ setSelectedImages([]); // Clear selected images after upload
               />
               <div className="flex flex-col items-center">
                 <p>Regular Price</p>
-                <span className="text-xs">($ / month)</span>
+                {formData.type === "rent" && (
+                  <span className="text-xs">($ / month)</span>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -332,7 +333,9 @@ setSelectedImages([]); // Clear selected images after upload
                   />
                   <div className="flex flex-col items-center">
                     <p>Discounted Price</p>
-                    <span className="text-xs">($ / month)</span>
+                    {formData.type === "rent" && (
+                      <span className="text-xs">($ / month)</span>
+                    )}
                   </div>
                 </div>
               ) : null}
@@ -363,13 +366,12 @@ setSelectedImages([]); // Clear selected images after upload
             >
               {imageUploading ? "Uploading..." : "Upload"}
             </button>
-           
           </div>
-          {
-              formData.imageUrls && formData.imageUrls.length > 0 && (
-              formData.imageUrls.map((url, index) => (
-                <div className="flex justify-between items-center" >
-  <img
+          {formData.imageUrls &&
+            formData.imageUrls.length > 0 &&
+            formData.imageUrls.map((url, index) => (
+              <div className="flex justify-between items-center">
+                <img
                   key={index}
                   src={url}
                   alt="uploaded"
@@ -387,11 +389,8 @@ setSelectedImages([]); // Clear selected images after upload
                 >
                   Delete
                 </button>
-                </div>
-              
-              ))
-              )
-            }
+              </div>
+            ))}
           <button
             disabled={loading || imageUploading || uploading}
             onClick={handleSubmit}

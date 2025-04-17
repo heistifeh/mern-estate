@@ -50,81 +50,81 @@ const CreateListing = () => {
     fetchListing();
   }, []);
 
- const handleImageChange = (e) => {
-     const files = Array.from(e.target.files); // Convert FileList to an array
-     setSelectedImages((prevImages) => [...prevImages, ...files]); // Append new images to the existing array
-   };
- 
-   const uploadFile = async (img) => {
-     const data = new FormData();
-     data.append("file", img);
-     data.append("upload_preset", "images_preset");
- 
-     try {
-       let cloudName = "dyvvq1ycl";
-       let resourceType = "image";
-       let api = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
- 
-       const res = await axios.post(api, data);
-       return res.data.secure_url;
-     } catch (error) {
-       console.error(error);
-     }
-   };
- 
-   const handleImageUpload = async (e) => {
-     e.preventDefault();
- 
-     // if (selectedImages.length === 0) {
-     //   setImageUploadError("Please select at least one image.");
-     //   return;
-     // }
-     // if (selectedImages.length > 6) {
-     //   setImageUploadError("You can only upload a maximum of 6 images.");
-     //   return;
-     // }
- 
-     try {
-       if (selectedImages.length === 0) {
-         setImageUploadError("Please select at least one image.");
-         return;
-       }
-       if (selectedImages.length > 6) {
-         setImageUploadError("You can only upload a maximum of 6 images.");
-         return;
-       }
-       if (formData.imageUrls.length > 6) {
-         setImageUploadError("You can only upload a maximum of 6 images.");
-         return;
-       }
-       setUploading(true);
-       setImageUploadError("");
-       setImageUploadSuccess("");
-       setImageUploading(true);
-       // Upload all selected images and store their URLs
-       const uploadedImages = await Promise.all(
-         selectedImages.map((image) => uploadFile(image))
-       );
-       console.log(uploadedImages);
- 
-       setFormData((prevFormData) => ({
-         ...prevFormData,
-         imageUrls: [...prevFormData.imageUrls, ...uploadedImages],
-       }));
- setSelectedImages([]); // Clear selected images after upload
-       setImageUploadSuccess("Images uploaded successfully!");
-       setTimeout(() => {
-         setImageUploadSuccess("");
-       }, 2000);
-       // Reset selected images
-       setUploading(false);
-       setImageUploading(false);
-     } catch (error) {
-       console.error(error);
-       setImageUploadError("Failed to upload images. Please try again.");
-       setImageUploading(false);
-     }
-   };
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files); // Convert FileList to an array
+    setSelectedImages((prevImages) => [...prevImages, ...files]); // Append new images to the existing array
+  };
+
+  const uploadFile = async (img) => {
+    const data = new FormData();
+    data.append("file", img);
+    data.append("upload_preset", "images_preset");
+
+    try {
+      let cloudName = "dyvvq1ycl";
+      let resourceType = "image";
+      let api = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+
+      const res = await axios.post(api, data);
+      return res.data.secure_url;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleImageUpload = async (e) => {
+    e.preventDefault();
+
+    // if (selectedImages.length === 0) {
+    //   setImageUploadError("Please select at least one image.");
+    //   return;
+    // }
+    // if (selectedImages.length > 6) {
+    //   setImageUploadError("You can only upload a maximum of 6 images.");
+    //   return;
+    // }
+
+    try {
+      if (selectedImages.length === 0) {
+        setImageUploadError("Please select at least one image.");
+        return;
+      }
+      if (selectedImages.length > 6) {
+        setImageUploadError("You can only upload a maximum of 6 images.");
+        return;
+      }
+      if (formData.imageUrls.length > 6) {
+        setImageUploadError("You can only upload a maximum of 6 images.");
+        return;
+      }
+      setUploading(true);
+      setImageUploadError("");
+      setImageUploadSuccess("");
+      setImageUploading(true);
+      // Upload all selected images and store their URLs
+      const uploadedImages = await Promise.all(
+        selectedImages.map((image) => uploadFile(image))
+      );
+      console.log(uploadedImages);
+
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        imageUrls: [...prevFormData.imageUrls, ...uploadedImages],
+      }));
+      setSelectedImages([]); // Clear selected images after upload
+      setImageUploadSuccess("Images uploaded successfully!");
+      setTimeout(() => {
+        setImageUploadSuccess("");
+      }, 2000);
+      // Reset selected images
+      setUploading(false);
+      setImageUploading(false);
+    } catch (error) {
+      console.error(error);
+      setImageUploadError("Failed to upload images. Please try again.");
+      setImageUploading(false);
+    }
+  };
   const handleRemoveImage = (index) => {
     setFormData({
       ...formData,
@@ -325,7 +325,9 @@ const CreateListing = () => {
               />
               <div className="flex flex-col items-center">
                 <p>Regular Price</p>
-                <span className="text-xs">($ / month)</span>
+                {formData.type === "rent" && (
+                  <span className="text-xs">($ / month)</span>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -343,7 +345,9 @@ const CreateListing = () => {
                   />
                   <div className="flex flex-col items-center">
                     <p>Discounted Price</p>
-                    <span className="text-xs">($ / month)</span>
+                    {formData.type === 'rent' && (
+                     <span className='text-xs'>($ / month)</span>
+                   )}
                   </div>
                 </div>
               ) : null}
