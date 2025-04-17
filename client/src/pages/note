@@ -1,0 +1,158 @@
+ useEffect(() => {
+    const fetchListing = async () => {
+      const listingId = params.listingId;
+      const res = await fetch(`/api/listing/get/${listingId}`);
+      const data = await res.json();
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+      setFormData(data);
+    };
+
+    fetchListing();
+  }, []);
+
+ const handleImageChange = (e) => {
+     const files = Array.from(e.target.files); // Convert FileList to an array
+     setSelectedImages((prevImages) => [...prevImages, ...files]); // Append new images to the existing array
+   };
+ 
+   const uploadFile = async (img) => {
+     const data = new FormData();
+     data.append("file", img);
+     data.append("upload_preset", "images_preset");
+ 
+     try {
+       let cloudName = "dyvvq1ycl";
+       let resourceType = "image";
+       let api = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+ 
+       const res = await axios.post(api, data);
+       return res.data.secure_url;
+     } catch (error) {
+       console.error(error);
+     }
+   };
+ 
+   const handleImageUpload = async (e) => {
+     e.preventDefault();
+ 
+     // if (selectedImages.length === 0) {
+     //   setImageUploadError("Please select at least one image.");
+     //   return;
+     // }
+     // if (selectedImages.length > 6) {
+     //   setImageUploadError("You can only upload a maximum of 6 images.");
+     //   return;
+     // }
+ 
+     try {
+       if (selectedImages.length === 0) {
+         setImageUploadError("Please select at least one image.");
+         return;
+       }
+       if (selectedImages.length > 6) {
+         setImageUploadError("You can only upload a maximum of 6 images.");
+         return;
+       }
+       if (formData.imageUrls.length > 6) {
+         setImageUploadError("You can only upload a maximum of 6 images.");
+         return;
+       }
+       setUploading(true);
+       setImageUploadError("");
+       setImageUploadSuccess("");
+       setImageUploading(true);
+       // Upload all selected images and store their URLs
+       const uploadedImages = await Promise.all(
+         selectedImages.map((image) => uploadFile(image))
+       );
+       console.log(uploadedImages);
+ 
+       setFormData((prevFormData) => ({
+         ...prevFormData,
+         imageUrls: [...prevFormData.imageUrls, ...uploadedImages],
+       }));
+ setSelectedImages([]); // Clear selected images after upload
+       setImageUploadSuccess("Images uploaded successfully!");
+       setTimeout(() => {
+         setImageUploadSuccess("");
+       }, 2000);
+       // Reset selected images
+       setUploading(false);
+       setImageUploading(false);
+     } catch (error) {
+       console.error(error);
+       setImageUploadError("Failed to upload images. Please try again.");
+       setImageUploading(false);
+     }
+   };
+  const handleRemoveImage = (index) => {
+    setFormData({
+      ...formData,
+      imageUrls: formData.imageUrls.filter((_, i) => i !== index),
+    });
+  };
+
+  const handleChange = (e) => {
+    if (e.target.id === "sale" || e.target.id === "rent") {
+      setFormData({
+        ...formData,
+        type: e.target.id,
+      });
+    }
+
+    if (
+      e.target.id === "parking" ||
+      e.target.id === "furnished" ||
+      e.target.id === "offer"
+    ) {
+      setFormData({
+        ...formData,
+        [e.target.id]: e.target.checked,
+      });
+    }
+
+    if (
+      e.target.type === "number" ||
+      e.target.type === "text" ||
+      e.target.type === "textarea"
+    ) {
+      setFormData({
+        ...formData,
+        [e.target.id]: e.target.value,
+      });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (formData.imageUrls.length < 1)
+        return setError("You must upload at least one image");
+      if (+formData.regularPrice < +formData.discountPrice)
+        return setError("Discount price must be lower than regular price");
+      setLoading(true);
+      setError(false);
+      const res = await fetch(`/api/listing/update/${params.listingId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          userRef: currentUser._id,
+        }),
+      });
+      const data = await res.json();
+      setLoading(false);
+      if (data.success === false) {
+        setError(data.message);
+      }
+      navigate(`/listing/${data._id}`);
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
