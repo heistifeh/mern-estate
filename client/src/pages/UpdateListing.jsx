@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { set } from "mongoose";
 const CreateListing = () => {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const params = useParams();
   //store image files first
   const [selectedImages, setSelectedImages] = useState([]);
   //store image urls after uploading to cloudinary
@@ -34,80 +35,101 @@ const CreateListing = () => {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   //handle image upload
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files); // Convert FileList to an array
-    setSelectedImages((prevImages) => [...prevImages, ...files]); // Append new images to the existing array
-  };
-
-  const uploadFile = async (img) => {
-    const data = new FormData();
-    data.append("file", img);
-    data.append("upload_preset", "images_preset");
-
-    try {
-      let cloudName = "dyvvq1ycl";
-      let resourceType = "image";
-      let api = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
-
-      const res = await axios.post(api, data);
-      return res.data.secure_url;
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleImageUpload = async (e) => {
-    e.preventDefault();
-
-    // if (selectedImages.length === 0) {
-    //   setImageUploadError("Please select at least one image.");
-    //   return;
-    // }
-    // if (selectedImages.length > 6) {
-    //   setImageUploadError("You can only upload a maximum of 6 images.");
-    //   return;
-    // }
-
-    try {
-      if (selectedImages.length === 0) {
-        setImageUploadError("Please select at least one image.");
+  useEffect(() => {
+    const fetchListing = async () => {
+      const listingId = params.listingId;
+      const res = await fetch(`/api/listing/get/${listingId}`);
+      const data = await res.json();
+      if (data.success === false) {
+        console.log(data.message);
         return;
       }
-      if (selectedImages.length > 6) {
-        setImageUploadError("You can only upload a maximum of 6 images.");
-        return;
-      }
-      if (formData.imageUrls.length > 6) {
-        setImageUploadError("You can only upload a maximum of 6 images.");
-        return;
-      }
-      setUploading(true);
-      setImageUploadError("");
-      setImageUploadSuccess("");
-      setImageUploading(true);
-      // Upload all selected images and store their URLs
-      const uploadedImages = await Promise.all(
-        selectedImages.map((image) => uploadFile(image))
-      );
-      console.log(uploadedImages);
+      setFormData(data);
+    };
 
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        imageUrls: [...prevFormData.imageUrls, ...uploadedImages],
-      }));
-setSelectedImages([]); // Clear selected images after upload
-      setImageUploadSuccess("Images uploaded successfully!");
-      setTimeout(() => {
-        setImageUploadSuccess("");
-      }, 2000);
-      // Reset selected images
-      setUploading(false);
-      setImageUploading(false);
-    } catch (error) {
-      console.error(error);
-      setImageUploadError("Failed to upload images. Please try again.");
-      setImageUploading(false);
-    }
+    fetchListing();
+  }, []);
+
+ const handleImageChange = (e) => {
+     const files = Array.from(e.target.files); // Convert FileList to an array
+     setSelectedImages((prevImages) => [...prevImages, ...files]); // Append new images to the existing array
+   };
+ 
+   const uploadFile = async (img) => {
+     const data = new FormData();
+     data.append("file", img);
+     data.append("upload_preset", "images_preset");
+ 
+     try {
+       let cloudName = "dyvvq1ycl";
+       let resourceType = "image";
+       let api = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+ 
+       const res = await axios.post(api, data);
+       return res.data.secure_url;
+     } catch (error) {
+       console.error(error);
+     }
+   };
+ 
+   const handleImageUpload = async (e) => {
+     e.preventDefault();
+ 
+     // if (selectedImages.length === 0) {
+     //   setImageUploadError("Please select at least one image.");
+     //   return;
+     // }
+     // if (selectedImages.length > 6) {
+     //   setImageUploadError("You can only upload a maximum of 6 images.");
+     //   return;
+     // }
+ 
+     try {
+       if (selectedImages.length === 0) {
+         setImageUploadError("Please select at least one image.");
+         return;
+       }
+       if (selectedImages.length > 6) {
+         setImageUploadError("You can only upload a maximum of 6 images.");
+         return;
+       }
+       if (formData.imageUrls.length > 6) {
+         setImageUploadError("You can only upload a maximum of 6 images.");
+         return;
+       }
+       setUploading(true);
+       setImageUploadError("");
+       setImageUploadSuccess("");
+       setImageUploading(true);
+       // Upload all selected images and store their URLs
+       const uploadedImages = await Promise.all(
+         selectedImages.map((image) => uploadFile(image))
+       );
+       console.log(uploadedImages);
+ 
+       setFormData((prevFormData) => ({
+         ...prevFormData,
+         imageUrls: [...prevFormData.imageUrls, ...uploadedImages],
+       }));
+ setSelectedImages([]); // Clear selected images after upload
+       setImageUploadSuccess("Images uploaded successfully!");
+       setTimeout(() => {
+         setImageUploadSuccess("");
+       }, 2000);
+       // Reset selected images
+       setUploading(false);
+       setImageUploading(false);
+     } catch (error) {
+       console.error(error);
+       setImageUploadError("Failed to upload images. Please try again.");
+       setImageUploading(false);
+     }
+   };
+  const handleRemoveImage = (index) => {
+    setFormData({
+      ...formData,
+      imageUrls: formData.imageUrls.filter((_, i) => i !== index),
+    });
   };
 
   const handleChange = (e) => {
@@ -140,43 +162,33 @@ setSelectedImages([]); // Clear selected images after upload
       });
     }
   };
-  console.log(formData);
 
   const handleSubmit = async (e) => {
-    if (formData.imageUrls.length === 0) {
-      setError("Please upload at least one image.");
-      return;
-    }
-    if (formData.imageUrls.length > 6) {
-      setError("You can only upload a maximum of 6 images.");
-      return;
-    }
-    if (+formData.regularPrice < +formData.discountPrice) {
-      setError("Discounted price must be less than regular price.");
-      return;
-    }
+    e.preventDefault();
     try {
-      e.preventDefault();
+      // if (formData.imageUrls.length < 1)
+      //   return setError("You must upload at least one image");
+      if (+formData.regularPrice < +formData.discountPrice)
+        return setError("Discount price must be lower than regular price");
       setLoading(true);
-      setError("");
-      const res = await fetch("/api/listing/create", {
+      setError(false);
+      const res = await fetch(`/api/listing/update/${params.listingId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...formData, userRef: currentUser._id }),
+        body: JSON.stringify({
+          ...formData,
+          userRef: currentUser._id,
+        }),
       });
       const data = await res.json();
       setLoading(false);
       if (data.success === false) {
         setError(data.message);
-        setLoading(false);
-        return;
       }
-      setSuccess(data.message);
-      navigate("/listings");
+      navigate(`/listing/${data._id}`);
     } catch (error) {
-      console.error(error);
       setError(error.message);
       setLoading(false);
     }
@@ -263,7 +275,6 @@ setSelectedImages([]); // Clear selected images after upload
               <span>Furnished</span>
             </div>
             <div className="flex gap-2">
-             
               <input
                 type="checkbox"
                 id="offer"
@@ -363,13 +374,12 @@ setSelectedImages([]); // Clear selected images after upload
             >
               {imageUploading ? "Uploading..." : "Upload"}
             </button>
-           
           </div>
-          {
-              formData.imageUrls && formData.imageUrls.length > 0 && (
-              formData.imageUrls.map((url, index) => (
-                <div className="flex justify-between items-center" >
-  <img
+          {formData.imageUrls &&
+            formData.imageUrls.length > 0 &&
+            formData.imageUrls.map((url, index) => (
+              <div className="flex justify-between items-center">
+                <img
                   key={index}
                   src={url}
                   alt="uploaded"
@@ -387,11 +397,8 @@ setSelectedImages([]); // Clear selected images after upload
                 >
                   Delete
                 </button>
-                </div>
-              
-              ))
-              )
-            }
+              </div>
+            ))}
           <button
             disabled={loading || imageUploading || uploading}
             onClick={handleSubmit}
