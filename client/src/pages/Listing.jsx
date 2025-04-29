@@ -4,23 +4,27 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
 import { Navigation } from "swiper/modules";
 import "swiper/css/bundle";
+import { useSelector } from "react-redux";
 import {
-    FaBath,
-    FaBed,
-    FaChair,
-    FaMapMarkedAlt,
-    FaMapMarkerAlt,
-    FaParking,
-    FaShare,
-  } from 'react-icons/fa';
-  
+  FaBath,
+  FaBed,
+  FaChair,
+  FaMapMarkedAlt,
+  FaMapMarkerAlt,
+  FaParking,
+  FaShare,
+} from "react-icons/fa";
+import Contact from "../components/Contact";
+
 function Listing() {
   SwiperCore.use([Navigation]);
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [contact, setContact] = useState(false);
   const params = useParams();
+  const { currentUser } = useSelector((state) => state.user);
   useEffect(() => {
     const fetchListing = async () => {
       try {
@@ -71,6 +75,7 @@ function Listing() {
             ))}
           </Swiper>
           <div className="fixed top-[13%] right-[3%] z-10 border rounded-full w-12 h-12 flex justify-center items-center bg-slate-100 cursor-pointer">
+            {/* link copied */}
             <FaShare
               className="text-slate-500"
               onClick={() => {
@@ -116,9 +121,7 @@ function Listing() {
             <ul className="text-green-900 font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6">
               <li className="flex items-center gap-1 whitespace-nowrap ">
                 <FaBed className="text-lg" />
-                {listing.bedroom > 1
-                  ? `${listing.bedroom} beds `
-                  : `no bed `}
+                {listing.bedroom > 1 ? `${listing.bedroom} beds ` : `no bed `}
               </li>
               <li className="flex items-center gap-1 whitespace-nowrap ">
                 <FaBath className="text-lg" />
@@ -135,6 +138,15 @@ function Listing() {
                 {listing.furnished ? "Furnished" : "Unfurnished"}
               </li>
             </ul>
+            {currentUser && listing.userRef !== currentUser._id && !contact && (
+              <button
+                onClick={() => setContact(true)}
+                className="bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3 cursor-pointer"
+              >
+                Contact Landlord
+              </button>
+            )}
+            {contact && <Contact listing={listing} />}
           </div>
         </>
       )}
