@@ -121,7 +121,7 @@ function Listing() {
             <ul className="text-green-900 font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6">
               <li className="flex items-center gap-1 whitespace-nowrap ">
                 <FaBed className="text-lg" />
-                {listing.bedroom > 1 ? `${listing.bedroom} beds ` : `no bed `}
+                {listing.bedrooms > 1 ? `${listing.bedrooms} beds ` : `no bed `}
               </li>
               <li className="flex items-center gap-1 whitespace-nowrap ">
                 <FaBath className="text-lg" />

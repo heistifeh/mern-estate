@@ -123,7 +123,7 @@ export default function Profile() {
       if (data.success === false) {
         dispatch(signOutFailure(data.message));
       }
-      dispatch(signOutSuccess(data));
+      dispatch(signOutSuccess(data.message));
       navigate("/sign-in");
     } catch (error) {
       dispatch(signOutFailure(error.message));

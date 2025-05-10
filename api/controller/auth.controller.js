@@ -79,4 +79,7 @@ export const signout = async (req, res, next) => {
       .status(200)
       .json({ message: "You have been signed out" });
   }
+  else{
+    return next(errorHandler(401, "You are not signed in"));
+  }
 }
