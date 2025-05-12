@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
 import { Navigation } from "swiper/modules";
@@ -148,6 +148,17 @@ function Listing() {
             )}
             {contact && <Contact listing={listing} />}
           </div>
+          {!currentUser && (
+            <div className="flex flex-col max-w-4xl mx-auto p-3 my-7 gap-4">
+              <span className="text-sm">
+                {" "}
+                Please sign in to contact the landlord
+              </span>
+              <Link to="/sign-in" className="text-blue-500 hover:underline">
+                Sign in now
+              </Link>
+            </div>
+          )}
         </>
       )}
     </div>
