@@ -60,39 +60,38 @@ export const getListings = async (req, res, next) => {
   try {
     const limit = parseInt(req.query.limit) || 9;
     const startIndex = parseInt(req.query.startIndex) || 0;
+    let offer = req.query.offer;
 
-    const offer =
-      req.query.offer === "true"
-        ? true
-        : req.query.offer === "false"
-        ? false
-        : { $in: [true, false] };
+    if (offer === undefined || offer === 'false') {
+      offer = { $in: [false, true] };
+    }
 
-    const furnished =
-      req.query.furnished === "true"
-        ? true
-        : req.query.furnished === "false"
-        ? false
-        : { $in: [true, false] };
+    let furnished = req.query.furnished;
 
-    const parking =
-      req.query.parking === "true"
-        ? true
-        : req.query.parking === "false"
-        ? false
-        : { $in: [true, false] };
+    if (furnished === undefined || furnished === 'false') {
+      furnished = { $in: [false, true] };
+    }
 
-    const type =
-      req.query.type && req.query.type !== "all"
-        ? req.query.type
-        : { $in: ["sale", "rent"] };
+    let parking = req.query.parking;
 
-    const searchTerm = req.query.searchTerm || "";
-    const sort = req.query.sort || "createdAt";
-    const order = req.query.order === "asc" ? 1 : -1;
+    if (parking === undefined || parking === 'false') {
+      parking = { $in: [false, true] };
+    }
+
+    let type = req.query.type;
+
+    if (type === undefined || type === 'all') {
+      type = { $in: ['sale', 'rent'] };
+    }
+
+    const searchTerm = req.query.searchTerm || '';
+
+    const sort = req.query.sort || 'createdAt';
+
+    const order = req.query.order || 'desc';
 
     const listings = await Listing.find({
-      name: { $regex: searchTerm, $options: "i" },
+      name: { $regex: searchTerm, $options: 'i' },
       offer,
       furnished,
       parking,
@@ -101,10 +100,6 @@ export const getListings = async (req, res, next) => {
       .sort({ [sort]: order })
       .limit(limit)
       .skip(startIndex);
-
-    if (!listings.length) {
-      return next(errorHandler(404, "No listings found"));
-    }
 
     return res.status(200).json(listings);
   } catch (error) {
